@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/memos")
@@ -26,6 +28,21 @@ public class MemoController {
         return "memo-list";
     }
 
+    //検索処理
+    @GetMapping("/search")
+    public String searchMemos(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<Memo> memos;
+
+        if(keyword == null || keyword.trim().isEmpty()){
+            memos = memoRepository.findAll();
+        }else{
+            memos = memoRepository.searchMemos(keyword);
+        }
+        model.addAttribute("memos", memos);
+        return "memo-list";
+    }
+    
+
     //新しいメモのフォーム表示
     @GetMapping("/new")
     public String newMemoForm(Model model){
@@ -36,7 +53,16 @@ public class MemoController {
     //新しいメモの作成
     @PostMapping
     public String saveMemo(@ModelAttribute Memo memo) {
+        if(memo.getId() != null){
+            //既存のメモを取得
+            Memo existingMemo = memoRepository.findById(memo.getId()).orElseThrow(()-> new IllegalArgumentException("Invalid memo Id" + memo.getId()));
+            //更新するフィールドをセット
+            existingMemo.setTitle(memo.getTitle());
+            existingMemo.setContent(memo.getContent());
+            memoRepository.save(existingMemo); 
+        }else{
         memoRepository.save(memo);
+        }
         return "redirect:/memos";
     }
     

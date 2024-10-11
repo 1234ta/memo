@@ -2,18 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>メモ一覧</title>
+    <title>メモ作成</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <h1>メモ一覧</h1>
-    <a href="/memos/new">新しいメモの作成</a>
-    <ul>
-      <li th:each="memo : ${memos}">
-        <a th:href="@{memos/edit/{id}(id=${memo.id})}" th:text="${memo.title}"
-          >Memo Title</a
-        >
-        <a th:href="@{memos/delete/{id}(id=${memo.id})}">(削除)</a>
-      </li>
-    </ul>
+    <div class="container mt-5">
+      <!--メモ一覧のタイトル-->
+      <h1 class="mb-4 text-center">メモ一覧</h1>
+
+      <!--検索フォーム-->
+      <form th:action="@{/memos/search}" method="get">
+        <div class="input-group mb-4">
+          <input
+            type="text"
+            class="form-control"
+            name="keyword"
+            placeholder="キーワードで検索"
+          />
+          <button type="submit" class="btn btn-primary">検索</button>
+        </div>
+      </form>
+
+      <!--新しいメモ作成ボタン-->
+      <a href="/memos/new" class="btn btn-success mb-3">新しいメモの作成</a>
+
+      <!--メモリスト-->
+      <ul class="list-group">
+        <li class="list-group-item" th:each="memo : ${memos}">
+          <div class="d-flex justify-content-between align-items-center">
+            <span th:text="${memo.content}">Memo Title</span>
+            <div>
+              <a
+                th:href="@{memos/edit/{id}(id=${memo.id})}"
+                class="btn btn-outline-primary btn-sm"
+                >編集</a
+              >
+              <a
+                th:href="@{memos/delete/{id}(id=${memo.id})}"
+                class="btn btn-outline-danger btn-sm"
+                >削除</a
+              >
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
